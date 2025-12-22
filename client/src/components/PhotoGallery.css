@@ -1,0 +1,561 @@
+.photo-gallery {
+  width: 100%;
+}
+
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #00ff41;
+  position: relative;
+}
+
+.gallery-header::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, #ff0080, transparent);
+  animation: scan-line 3s linear infinite;
+}
+
+@keyframes scan-line {
+  to {
+    left: 100%;
+  }
+}
+
+.gallery-header h2 {
+  color: #00ff41;
+  font-weight: 300;
+  font-size: 2rem;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.view-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.view-btn, .refresh-btn {
+  background: rgba(0, 255, 65, 0.1);
+  border: 2px solid #00ff41;
+  color: #00ff41;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.view-btn:hover, .refresh-btn:hover {
+  background: rgba(255, 0, 128, 0.2);
+  border-color: #ff0080;
+  color: #ff0080;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+}
+
+.view-btn.active {
+  background: rgba(255, 0, 128, 0.3);
+  border-color: #ff0080;
+  color: #ff0080;
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
+}
+
+/* 瀑布流布局 */
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -20px; /* gutter size offset */
+  width: auto;
+}
+
+.my-masonry-grid_column {
+  padding-left: 20px; /* gutter size */
+  background-clip: padding-box;
+}
+
+/* 样式重置 */
+.my-masonry-grid_column > div { 
+  margin-bottom: 20px;
+}
+
+.photo-item {
+  margin-bottom: 20px;
+}
+
+.photo-container {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 65, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.photo-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 0 30px rgba(255, 0, 128, 0.4),
+    0 8px 25px rgba(0, 0, 0, 0.4);
+  border-color: #ff0080;
+}
+
+.photo-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: all 0.3s ease;
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.photo-container:hover img {
+  transform: scale(1.05);
+  filter: brightness(1) contrast(1.2);
+}
+
+.photo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 65, 0.1) 0%, 
+    rgba(255, 0, 128, 0.2) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  color: #00ff41;
+  backdrop-filter: blur(5px);
+}
+
+.photo-container:hover .photo-overlay {
+  opacity: 1;
+}
+
+.photo-info {
+  flex: 1;
+}
+
+.photo-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 5px 0;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+}
+
+.photo-details {
+  font-size: 12px;
+  opacity: 0.9;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  color: #ff0080;
+}
+
+.photo-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.tech-btn, .delete-btn {
+  background: rgba(255, 0, 128, 0.2);
+  border: 2px solid #ff0080;
+  color: #ff0080;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.tech-btn:hover, .delete-btn:hover {
+  background: rgba(255, 0, 128, 0.4);
+  border-color: #00ff41;
+  color: #00ff41;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+}
+
+.tech-btn {
+  background: rgba(0, 255, 65, 0.2);
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+.tech-btn:hover {
+  background: rgba(0, 255, 65, 0.4);
+  border-color: #ff0080;
+  color: #ff0080;
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
+}
+
+/* 网格视图 */
+.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* 列表视图 */
+.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: rgba(0, 255, 65, 0.05);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.list-item:hover {
+  border-color: #ff0080;
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+  transform: translateX(5px);
+}
+
+.list-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.list-item img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.4);
+}
+
+.list-item-info {
+  flex: 1;
+}
+
+.list-item-info h3 {
+  color: #00ff41;
+  font-size: 16px;
+  margin: 0 0 8px 0;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+}
+
+.list-item-info p {
+  color: #ff0080;
+  font-size: 14px;
+  margin: 4px 0;
+  font-family: 'Courier New', monospace;
+}
+
+.list-item-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.list-item-actions .tech-btn,
+.list-item-actions .delete-btn {
+  width: auto;
+  padding: 8px 16px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 6px;
+}
+
+/* 照片模态框 */
+.photo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  position: relative;
+  background: #0a0a0a;
+  border: 2px solid #00ff41;
+  border-radius: 16px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(0, 255, 65, 0.3);
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 0, 128, 0.2);
+  border: 2px solid #ff0080;
+  color: #ff0080;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.close-btn:hover {
+  background: rgba(255, 0, 128, 0.4);
+  border-color: #00ff41;
+  color: #00ff41;
+  transform: rotate(90deg);
+}
+
+.modal-content img {
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+}
+
+.modal-info {
+  padding: 20px;
+  background: rgba(0, 255, 65, 0.05);
+  border-top: 1px solid rgba(255, 0, 128, 0.3);
+}
+
+.modal-info h3 {
+  color: #00ff41;
+  font-size: 18px;
+  margin: 0 0 10px 0;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+}
+
+.modal-info p {
+  color: #ff0080;
+  font-size: 14px;
+  margin: 5px 0;
+  font-family: 'Courier New', monospace;
+}
+
+.tech-analysis-btn {
+  background: linear-gradient(135deg, #00ff41, #ff0080);
+  border: none;
+  color: #0a0a0a;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+}
+
+.tech-analysis-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(255, 0, 128, 0.5);
+}
+
+/* 加载状态 */
+.gallery-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.gallery-loading .spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(0, 255, 65, 0.2);
+  border-top: 3px solid #ff0080;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+}
+
+.gallery-loading p {
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: blink 1s infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}
+
+/* 空状态 */
+.empty-gallery {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  filter: hue-rotate(120deg);
+  animation: glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow-pulse {
+  from {
+    filter: drop-shadow(0 0 10px #00ff41);
+  }
+  to {
+    filter: drop-shadow(0 0 15px #ff0080);
+  }
+}
+
+.empty-gallery h2 {
+  color: #00ff41;
+  font-size: 2rem;
+  font-weight: 300;
+  margin: 0 0 15px 0;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.empty-gallery p {
+  color: #ff0080;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(255, 0, 128, 0.3);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .gallery-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .gallery-header h2 {
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+  }
+  
+  .my-masonry-grid {
+    margin-left: -10px;
+  }
+  
+  .my-masonry-grid_column {
+    padding-left: 10px;
+  }
+  
+  .photo-overlay {
+    padding: 15px;
+  }
+  
+  .list-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .list-item img {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  
+  .modal-content img {
+    max-height: 50vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .view-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+  
+  .photo-actions {
+    top: 5px;
+    right: 5px;
+  }
+  
+  .tech-btn, .delete-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+  
+  .modal-info {
+    padding: 15px;
+  }
+  
+  .modal-info h3 {
+    font-size: 16px;
+  }
+  
+  .modal-info p {
+    font-size: 12px;
+  }
+  
+  .tech-analysis-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}

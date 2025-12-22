@@ -1,0 +1,441 @@
+.upload-zone {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.upload-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.upload-header h2 {
+  color: #00ff41;
+  font-weight: 300;
+  font-size: 2rem;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.mode-btn {
+  background: rgba(0, 255, 65, 0.1);
+  color: #00ff41;
+  border: 1px solid #00ff41;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 0, 128, 0.2);
+  border-color: #ff0080;
+  color: #ff0080;
+  transform: translateY(-1px);
+}
+
+.mode-btn.active {
+  background: rgba(255, 0, 128, 0.3);
+  border-color: #ff0080;
+  color: #ff0080;
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.3);
+}
+
+.upload-header p {
+  color: #ff0080;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(255, 0, 128, 0.3);
+  margin: 0;
+}
+
+/* 拖拽区域 */
+.dropzone {
+  border: 3px dashed #00ff41;
+  border-radius: 12px;
+  padding: 60px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(0, 255, 65, 0.05);
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dropzone::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #00ff41, #ff0080, #00ff41);
+  border-radius: 12px;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  animation: border-rotate 3s linear infinite;
+}
+
+@keyframes border-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dropzone:hover {
+  border-color: #ff0080;
+  background: rgba(255, 0, 128, 0.1);
+  box-shadow: 0 0 30px rgba(255, 0, 128, 0.3);
+}
+
+.dropzone:hover::before {
+  opacity: 0.5;
+}
+
+.dropzone.active {
+  border-color: #ff0080;
+  background: rgba(255, 0, 128, 0.15);
+  transform: scale(1.02);
+  box-shadow: 0 0 40px rgba(255, 0, 128, 0.4);
+}
+
+.dropzone.uploading {
+  border-color: #00ff41;
+  background: rgba(0, 255, 65, 0.1);
+  cursor: not-allowed;
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  filter: hue-rotate(120deg);
+  animation: glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow-pulse {
+  from {
+    filter: drop-shadow(0 0 10px #00ff41);
+  }
+  to {
+    filter: drop-shadow(0 0 20px #ff0080);
+  }
+}
+
+.dropzone-content p {
+  margin: 5px 0;
+  font-size: 18px;
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+}
+
+.upload-hint {
+  font-size: 14px !important;
+  color: #ff0080 !important;
+  margin-top: 10px !important;
+  font-family: 'Courier New', monospace !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* 上传中状态 */
+.uploading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(0, 255, 65, 0.2);
+  border-top: 3px solid #ff0080;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+}
+
+.uploading-content p {
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.progress-bar {
+  width: 100%;
+  max-width: 300px;
+  height: 8px;
+  background: rgba(0, 255, 65, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 15px;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff41, #ff0080);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+}
+
+/* 上传结果 */
+.upload-results {
+  background: rgba(0, 255, 65, 0.05);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 65, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+  margin-bottom: 30px;
+}
+
+.upload-results h3 {
+  color: #ff0080;
+  font-weight: 400;
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+}
+
+.uploaded-files {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.uploaded-file {
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 0, 128, 0.05);
+  border: 1px solid rgba(255, 0, 128, 0.2);
+  transition: all 0.3s ease;
+}
+
+.uploaded-file:hover {
+  border-color: #00ff41;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+.uploaded-file img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.file-info {
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+}
+
+.file-name {
+  font-weight: 500;
+  color: #00ff41;
+  margin: 0 0 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+}
+
+.file-details {
+  color: #ff0080;
+  margin: 0;
+  text-shadow: 0 0 3px rgba(255, 0, 128, 0.3);
+}
+
+.continue-btn {
+  display: block;
+  margin: 0 auto;
+  background: rgba(0, 255, 65, 0.1);
+  color: #00ff41;
+  border: 2px solid #00ff41;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.continue-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, #ff0080 0%, transparent 70%);
+  transition: all 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+.continue-btn:hover {
+  background: rgba(255, 0, 128, 0.2);
+  border-color: #ff0080;
+  color: #ff0080;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+}
+
+.continue-btn:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+/* 上传提示 */
+.upload-tips {
+  background: rgba(255, 0, 128, 0.05);
+  border: 1px solid rgba(255, 0, 128, 0.2);
+  border-radius: 12px;
+  padding: 30px;
+  margin-top: 30px;
+}
+
+.upload-tips h3 {
+  color: #00ff41;
+  font-weight: 400;
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.upload-tips ul {
+  list-style: none;
+  padding: 0;
+}
+
+.upload-tips li {
+  padding: 8px 0;
+  color: #ff0080;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 0, 128, 0.1);
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 3px rgba(255, 0, 128, 0.3);
+}
+
+.upload-tips li:last-child {
+  border-bottom: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .upload-zone {
+    padding: 0 15px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .upload-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .dropzone {
+    padding: 40px 15px;
+  }
+  
+  .upload-icon {
+    font-size: 48px;
+  }
+  
+  .dropzone-content p {
+    font-size: 16px;
+  }
+  
+  .uploaded-files {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  
+  .upload-tips {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropzone {
+    padding: 30px 10px;
+  }
+  
+  .upload-icon {
+    font-size: 36px;
+  }
+  
+  .dropzone-content p {
+    font-size: 14px;
+  }
+  
+  .upload-results {
+    padding: 20px;
+  }
+  
+  .uploaded-files {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}
