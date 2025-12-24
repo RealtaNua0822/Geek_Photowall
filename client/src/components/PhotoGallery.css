@@ -95,14 +95,15 @@
   box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
 }
 
-/* 随机图片墙布局 */
+/* 随机图片墙布局 - 改进版 */
 .photo-wall {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  grid-auto-rows: 150px;
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-auto-rows: 120px;
+  gap: 12px;
   padding: 10px;
   width: 100%;
+  grid-auto-flow: dense;
 }
 
 .wall-photo-item {
@@ -115,10 +116,28 @@
   box-shadow: 
     0 0 20px rgba(0, 255, 65, 0.2),
     0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: rotate(0deg);
+}
+
+/* 添加微妙的随机旋转效果 */
+.wall-photo-item:nth-child(3n) {
+  transform: rotate(-1deg);
+}
+
+.wall-photo-item:nth-child(5n) {
+  transform: rotate(1deg);
+}
+
+.wall-photo-item:nth-child(7n) {
+  transform: rotate(-0.5deg);
+}
+
+.wall-photo-item:nth-child(11n) {
+  transform: rotate(0.5deg);
 }
 
 .wall-photo-item:hover {
-  transform: scale(1.02);
+  transform: scale(1.02) rotate(0deg);
   border-color: #ff0080;
   box-shadow: 
     0 0 30px rgba(255, 0, 128, 0.4),
@@ -126,7 +145,7 @@
   z-index: 10;
 }
 
-/* 不同大小的照片块 */
+/* 不同大小的照片块 - 增强版 */
 .size-large {
   grid-column: span 2;
   grid-row: span 2;
@@ -152,6 +171,52 @@
   grid-row: span 2;
 }
 
+/* 新增尺寸类名 */
+.size-wide-large {
+  grid-column: span 3;
+  grid-row: span 1;
+}
+
+.size-medium-wide {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.size-tall-large {
+  grid-column: span 1;
+  grid-row: span 3;
+}
+
+.size-medium-tall {
+  grid-column: span 1;
+  grid-row: span 2;
+}
+
+.size-square {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.size-medium-square {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.size-panorama {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+.size-portrait {
+  grid-column: span 1;
+  grid-row: span 3;
+}
+
+.size-thumbnail {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
 .wall-photo-container {
   width: 100%;
   height: 100%;
@@ -162,9 +227,26 @@
 .wall-photo-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: all 0.3s ease;
   filter: brightness(0.9) contrast(1.1);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+/* 为特定尺寸类使用cover模式，保持视觉冲击力 */
+.size-large .wall-photo-container img,
+.size-wide-large .wall-photo-container img,
+.size-tall-large .wall-photo-container img,
+.size-panorama .wall-photo-container img,
+.size-portrait .wall-photo-container img {
+  object-fit: cover;
+}
+
+/* 小尺寸使用contain模式，保持完整性 */
+.size-small .wall-photo-container img,
+.size-thumbnail .wall-photo-container img {
+  object-fit: contain;
 }
 
 .wall-photo-item:hover .wall-photo-container img {
@@ -689,9 +771,9 @@
   
   /* 图片墙响应式 */
   .photo-wall {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    grid-auto-rows: 120px;
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-auto-rows: 100px;
+    gap: 8px;
     padding: 5px;
   }
   
@@ -708,6 +790,31 @@
   .size-wide {
     grid-column: span 2;
     grid-row: span 1;
+  }
+  
+  .size-tall {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+  
+  .size-wide-large {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  .size-tall-large {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+  
+  .size-panorama {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  .size-portrait {
+    grid-column: span 1;
+    grid-row: span 2;
   }
   
   .wall-photo-overlay {
@@ -770,9 +877,9 @@
   
   /* 图片墙小屏幕响应式 */
   .photo-wall {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    grid-auto-rows: 100px;
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-auto-rows: 80px;
+    gap: 6px;
     padding: 3px;
   }
   
@@ -794,6 +901,32 @@
   .size-tall {
     grid-column: span 1;
     grid-row: span 2;
+  }
+  
+  .size-wide-large {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  .size-tall-large {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+  
+  .size-panorama {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  .size-portrait {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+  
+  .size-small,
+  .size-thumbnail {
+    grid-column: span 1;
+    grid-row: span 1;
   }
   
   .wall-photo-overlay {

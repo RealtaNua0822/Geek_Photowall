@@ -43,13 +43,16 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     return (
       <div className="photo-wall">
         {shuffledPhotos.map((photo, index) => {
-          // 随机生成不同大小的照片块
-          const sizeClass = getRandomSizeClass(index);
+          // 随机生成不同大小的照片块，考虑长宽比
+          const sizeClass = getRandomSizeClass(photo, index);
           return (
             <div 
               key={photo.id} 
               className={`wall-photo-item ${sizeClass}`}
               onClick={() => setSelectedPhoto(photo)}
+              style={{
+                '--aspect-ratio': photo.width / photo.height
+              }}
             >
               <div className="wall-photo-container">
                 {photo.webpPath ? (
@@ -106,14 +109,38 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     );
   };
 
-  // 随机生成大小类名
-  const getRandomSizeClass = (index) => {
-    const sizeClasses = [
-      'size-large', 'size-medium', 'size-small', 
-      'size-wide', 'size-tall', 'size-medium',
-      'size-small', 'size-large', 'size-medium'
-    ];
-    return sizeClasses[index % sizeClasses.length];
+  // 随机生成大小类名，考虑图片长宽比
+  const getRandomSizeClass = (photo, index) => {
+    const aspectRatio = photo.width / photo.height;
+    
+    // 根据长宽比选择合适的尺寸类别
+    let suitableSizes = [];
+    
+    if (aspectRatio > 1.5) {
+      // 宽图
+      suitableSizes = ['size-wide', 'size-wide-large', 'size-medium-wide', 'size-small'];
+    } else if (aspectRatio < 0.7) {
+      // 高图
+      suitableSizes = ['size-tall', 'size-tall-large', 'size-medium-tall', 'size-small'];
+    } else {
+      // 方图或接近方图
+      suitableSizes = ['size-large', 'size-medium', 'size-small', 'size-square', 'size-medium-square'];
+    }
+    
+    // 添加一些随机性，偶尔不按长宽比
+    if (Math.random() < 0.2) {
+      const allSizes = [
+        'size-large', 'size-medium', 'size-small', 
+        'size-wide', 'size-wide-large', 'size-medium-wide',
+        'size-tall', 'size-tall-large', 'size-medium-tall',
+        'size-square', 'size-medium-square', 'size-panorama',
+        'size-portrait', 'size-thumbnail'
+      ];
+      suitableSizes = allSizes;
+    }
+    
+    // 随机选择一个合适的尺寸
+    return suitableSizes[Math.floor(Math.random() * suitableSizes.length)];
   };
 
   // 渲染单个照片项
