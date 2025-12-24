@@ -41,13 +41,7 @@
   width: 100px;
   height: 2px;
   background: linear-gradient(90deg, #ff0080, transparent);
-  animation: scan-line 3s linear infinite;
-}
-
-@keyframes scan-line {
-  to {
-    left: 100%;
-  }
+  opacity: 0.8;
 }
 
 .gallery-header h2 {
