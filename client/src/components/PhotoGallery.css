@@ -1,8 +1,15 @@
+/* ========================================
+   PhotoGallery 组件样式
+   ======================================== */
+
 .photo-gallery {
   width: 100%;
 }
 
-/* WebP标识样式 */
+/* ========================================
+   WebP 格式标识
+   ======================================== */
+
 .webp-badge {
   background: linear-gradient(45deg, #4285f4, #34a853);
   color: white;
@@ -22,6 +29,10 @@
   font-size: 14px;
   text-shadow: 0 0 5px rgba(52, 168, 83, 0.3);
 }
+
+/* ========================================
+   画廊头部
+   ======================================== */
 
 .gallery-header {
   display: flex;
@@ -136,7 +147,7 @@
   z-index: 10;
 }
 
-/* Grid布局已移除，改用Flexbox瀑布流布局 */
+/* 尺寸类已移除 - 现在使用统一网格布局 */
 
 .wall-photo-container {
   width: 100%;
@@ -681,53 +692,7 @@
     padding: 5px;
   }
   
-  .wall-photo-item.size-large {
-    width: 200px;
-  }
-  
-  .wall-photo-item.size-medium {
-    width: 140px;
-  }
-  
-  .wall-photo-item.size-small {
-    width: 100px;
-  }
-  
-  .wall-photo-item.size-wide {
-    width: 280px;
-  }
-  
-  .wall-photo-item.size-wide-large {
-    width: 320px;
-  }
-  
-  .wall-photo-item.size-tall {
-    width: 100px;
-  }
-  
-  .wall-photo-item.size-tall-large {
-    width: 120px;
-  }
-  
-  .wall-photo-item.size-panorama {
-    width: 350px;
-  }
-  
-  .wall-photo-item.size-portrait {
-    width: 90px;
-  }
-  
-  .wall-photo-item.size-square {
-    width: 150px;
-  }
-  
-  .wall-photo-item.size-medium-square {
-    width: 120px;
-  }
-  
-  .wall-photo-item.size-thumbnail {
-    width: 80px;
-  }
+  /* 响应式尺寸调整已简化 - 使用CSS Grid自动调整 */
   
   .wall-photo-overlay {
     padding: 10px;
@@ -793,53 +758,7 @@
     padding: 3px;
   }
   
-  .wall-photo-item.size-large {
-    width: 160px;
-  }
-  
-  .wall-photo-item.size-medium {
-    width: 120px;
-  }
-  
-  .wall-photo-item.size-small {
-    width: 80px;
-  }
-  
-  .wall-photo-item.size-wide {
-    width: 220px;
-  }
-  
-  .wall-photo-item.size-wide-large {
-    width: 260px;
-  }
-  
-  .wall-photo-item.size-tall {
-    width: 80px;
-  }
-  
-  .wall-photo-item.size-tall-large {
-    width: 90px;
-  }
-  
-  .wall-photo-item.size-panorama {
-    width: 280px;
-  }
-  
-  .wall-photo-item.size-portrait {
-    width: 70px;
-  }
-  
-  .wall-photo-item.size-square {
-    width: 120px;
-  }
-  
-  .wall-photo-item.size-medium-square {
-    width: 100px;
-  }
-  
-  .wall-photo-item.size-thumbnail {
-    width: 60px;
-  }
+  /* 小屏幕响应式尺寸调整已简化 - 使用CSS Grid自动调整 */
   
   .wall-photo-overlay {
     padding: 8px;

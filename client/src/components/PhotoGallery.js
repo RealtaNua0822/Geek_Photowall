@@ -2,12 +2,26 @@ import React, { useState } from 'react';
 import TechParams from './TechParams';
 import './PhotoGallery.css';
 
+/**
+ * PhotoGallery - 照片展示组件
+ * 支持多种视图模式：图片墙、网格、列表
+ */
 const PhotoGallery = ({ photos, onRefresh, loading }) => {
+  // ========================================
+  // 状态管理
+  // ========================================
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [viewMode, setViewMode] = useState('wall'); // wall, grid, list
   const [showTechParams, setShowTechParams] = useState(false);
 
-  // 删除照片
+  // ========================================
+  // 事件处理函数
+  // ========================================
+
+  /**
+   * 删除照片
+   * @param {string} photoId - 照片ID
+   */
   const handleDeletePhoto = async (photoId) => {
     if (window.confirm('确定要删除这张照片吗？')) {
       try {
@@ -27,7 +41,13 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     }
   };
 
-  // 图片墙布局
+  // ========================================
+  // 渲染函数
+  // ========================================
+
+  /**
+   * 渲染图片墙视图
+   */
   const renderPhotoWall = () => {
     if (photos.length === 0) return null;
     
@@ -40,58 +60,78 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
             onClick={() => setSelectedPhoto(photo)}
           >
             <div className="wall-photo-container">
-              {photo.webpPath ? (
-                <picture>
-                  <source srcSet={photo.webpPath} type="image/webp" />
-                  <source srcSet={photo.mediumPath || photo.path} type="image/jpeg" />
-                  <img 
-                    src={photo.mediumPath || photo.path} 
-                    alt=""
-                    loading="lazy"
-                  />
-                </picture>
-              ) : (
-                <img 
-                  src={photo.mediumPath || photo.path} 
-                  alt=""
-                  loading="lazy"
-                />
-              )}
-              <div className="wall-photo-overlay">
-                <div className="wall-photo-details">
-                  {photo.width} × {photo.height}
-                  {photo.webpPath && <span className="webp-badge">WebP</span>}
-                </div>
-                <div className="wall-photo-actions">
-                  <button 
-                    className="wall-tech-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPhoto(photo);
-                      setShowTechParams(true);
-                    }}
-                    title="技术参数分析"
-                  >
-                    🔬
-                  </button>
-                  <button 
-                    className="wall-delete-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeletePhoto(photo.id);
-                    }}
-                    title="删除照片"
-                  >
-                    🗑️
-                  </button>
-                </div>
-              </div>
+              {renderPhotoImage(photo)}
+              {renderPhotoOverlay(photo)}
             </div>
           </div>
         ))}
       </div>
     );
   };
+
+  /**
+   * 渲染照片图片（支持WebP格式）
+   * @param {Object} photo - 照片对象
+   */
+  const renderPhotoImage = (photo) => {
+    if (photo.webpPath) {
+      return (
+        <picture>
+          <source srcSet={photo.webpPath} type="image/webp" />
+          <source srcSet={photo.mediumPath || photo.path} type="image/jpeg" />
+          <img 
+            src={photo.mediumPath || photo.path} 
+            alt=""
+            loading="lazy"
+          />
+        </picture>
+      );
+    } else {
+      return (
+        <img 
+          src={photo.mediumPath || photo.path} 
+          alt=""
+          loading="lazy"
+        />
+      );
+    }
+  };
+
+  /**
+   * 渲染照片悬停覆盖层
+   * @param {Object} photo - 照片对象
+   */
+  const renderPhotoOverlay = (photo) => (
+    <div className="wall-photo-overlay">
+      <div className="wall-photo-details">
+        {photo.width} × {photo.height}
+        {photo.webpPath && <span className="webp-badge">WebP</span>}
+      </div>
+      <div className="wall-photo-actions">
+        <button 
+          className="wall-tech-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedPhoto(photo);
+            setShowTechParams(true);
+          }}
+          title="技术参数分析"
+        >
+          🔬
+        </button>
+        <button 
+          className="wall-delete-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeletePhoto(photo.id);
+          }}
+          title="删除照片"
+        >
+          🗑️
+        </button>
+      </div>
+    </div>
+  );
 
   
 
@@ -207,6 +247,11 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     </div>
   );
 
+  // ========================================
+  // 条件渲染
+  // ========================================
+
+  // 加载状态
   if (loading) {
     return (
       <div className="gallery-loading">
@@ -216,6 +261,7 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     );
   }
 
+  // 空状态
   if (photos.length === 0) {
     return (
       <div className="empty-gallery">
@@ -226,8 +272,12 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     );
   }
 
+  // ========================================
+  // 主渲染
+  // ========================================
   return (
     <div className="photo-gallery">
+      {/* 画廊头部 */}
       <div className="gallery-header">
         <h2>作品展示 ({photos.length} 张照片)</h2>
         <div className="view-controls">
@@ -260,6 +310,7 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
         </div>
       </div>
 
+      {/* 画廊内容 */}
       <div className="gallery-content">
         {viewMode === 'wall' && renderPhotoWall()}
         {viewMode === 'grid' && renderGridView()}

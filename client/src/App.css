@@ -1,31 +1,24 @@
-/* 极客风格暗色主题 */
+/* ========================================
+   全局重置和基础样式
+   ======================================== */
+
+/* CSS Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* 根元素稳定性设置 */
 html, body, #root {
   transform: none !important;
   animation: none !important;
   scale: 1 !important;
 }
 
-/* 全局禁用所有动画和过渡效果 */
-* {
-  animation: none !important;
-  transition: none !important;
-  transform: none !important;
-}
-
-/* 禁用所有hover效果 */
-*:hover {
-  animation: none !important;
-  transition: none !important;
-  transform: none !important;
-}
-
-/* 禁用所有伪元素动画 */
+/* 全局动画禁用 - 解决页面抽动问题 */
+*,
+*:hover,
 *::before,
 *::after {
   animation: none !important;
@@ -33,13 +26,17 @@ html, body, #root {
   transform: none !important;
 }
 
-/* 禁用所有媒体查询动画 */
+/* 媒体查询中的动画禁用 */
 @media * {
   * {
     animation: none !important;
     transition: none !important;
   }
 }
+
+/* ========================================
+   基础样式和主题
+   ======================================== */
 
 body {
   font-family: 'Courier New', 'Fira Code', 'Consolas', monospace;
@@ -52,6 +49,10 @@ body {
   animation: none !important;
 }
 
+/* ========================================
+   主应用容器
+   ======================================== */
+
 .App {
   min-height: 100vh;
   display: flex;
@@ -63,7 +64,11 @@ body {
   animation: none !important;
 }
 
-/* 数据流可视化背景 */
+/* ========================================
+   头部组件样式
+   ======================================== */
+
+/* 背景效果 */
 .data-flow-background {
   position: fixed;
   top: 0;
@@ -75,7 +80,7 @@ body {
   pointer-events: none;
 }
 
-/* 头部样式 - 极客风格 */
+/* 主头部 */
 .app-header {
   background: linear-gradient(135deg, 
     rgba(0, 255, 65, 0.1) 0%, 
@@ -91,6 +96,7 @@ body {
   overflow: hidden;
 }
 
+/* 头部装饰线 */
 .app-header::before {
   content: '';
   position: absolute;
