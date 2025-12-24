@@ -2,6 +2,27 @@
   width: 100%;
 }
 
+/* WebP标识样式 */
+.webp-badge {
+  background: linear-gradient(45deg, #4285f4, #34a853);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(66, 133, 244, 0.3);
+}
+
+.webp-info {
+  color: #34a853;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 0 0 5px rgba(52, 168, 83, 0.3);
+}
+
 .gallery-header {
   display: flex;
   justify-content: space-between;
@@ -69,6 +90,157 @@
 
 .view-btn.active {
   background: rgba(255, 0, 128, 0.3);
+  border-color: #ff0080;
+  color: #ff0080;
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
+}
+
+/* 随机图片墙布局 */
+.photo-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-auto-rows: 150px;
+  gap: 15px;
+  padding: 10px;
+  width: 100%;
+}
+
+.wall-photo-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(0, 255, 65, 0.3);
+  box-shadow: 
+    0 0 20px rgba(0, 255, 65, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.wall-photo-item:hover {
+  transform: scale(1.02);
+  border-color: #ff0080;
+  box-shadow: 
+    0 0 30px rgba(255, 0, 128, 0.4),
+    0 8px 25px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+/* 不同大小的照片块 */
+.size-large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.size-medium {
+  grid-column: span 1;
+  grid-row: span 2;
+}
+
+.size-small {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.size-wide {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.size-tall {
+  grid-column: span 1;
+  grid-row: span 2;
+}
+
+.wall-photo-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.wall-photo-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s ease;
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.wall-photo-item:hover .wall-photo-container img {
+  transform: scale(1.05);
+  filter: brightness(1) contrast(1.2);
+}
+
+.wall-photo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 65, 0.1) 0%, 
+    rgba(255, 0, 128, 0.2) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px;
+  color: #00ff41;
+  backdrop-filter: blur(5px);
+}
+
+.wall-photo-item:hover .wall-photo-overlay {
+  opacity: 1;
+}
+
+.wall-photo-details {
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wall-photo-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.wall-tech-btn, .wall-delete-btn {
+  background: rgba(255, 0, 128, 0.2);
+  border: 2px solid #ff0080;
+  color: #ff0080;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 12px;
+}
+
+.wall-tech-btn:hover, .wall-delete-btn:hover {
+  background: rgba(255, 0, 128, 0.4);
+  border-color: #00ff41;
+  color: #00ff41;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+}
+
+.wall-tech-btn {
+  background: rgba(0, 255, 65, 0.2);
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+.wall-tech-btn:hover {
+  background: rgba(0, 255, 65, 0.4);
   border-color: #ff0080;
   color: #ff0080;
   box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
@@ -514,6 +686,43 @@
   .modal-content img {
     max-height: 50vh;
   }
+  
+  /* 图片墙响应式 */
+  .photo-wall {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-auto-rows: 120px;
+    gap: 10px;
+    padding: 5px;
+  }
+  
+  .size-large {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  
+  .size-medium {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+  
+  .size-wide {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  .wall-photo-overlay {
+    padding: 10px;
+  }
+  
+  .wall-photo-details {
+    font-size: 10px;
+  }
+  
+  .wall-tech-btn, .wall-delete-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -557,5 +766,54 @@
   .tech-analysis-btn {
     padding: 8px 16px;
     font-size: 12px;
+  }
+  
+  /* 图片墙小屏幕响应式 */
+  .photo-wall {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-auto-rows: 100px;
+    gap: 8px;
+    padding: 3px;
+  }
+  
+  .size-large {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  
+  .size-medium {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+  
+  .size-wide {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  
+  .size-tall {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+  
+  .wall-photo-overlay {
+    padding: 8px;
+  }
+  
+  .wall-photo-details {
+    font-size: 9px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .wall-tech-btn, .wall-delete-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 9px;
+  }
+  
+  .wall-photo-actions {
+    gap: 6px;
   }
 }

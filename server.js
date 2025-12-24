@@ -23,6 +23,7 @@ fs.ensureDirSync(uploadsDir);
 fs.ensureDirSync(photosDir);
 fs.ensureDirSync(thumbnailsDir);
 fs.ensureDirSync(webpDir);
+fs.ensureDirSync(path.join(__dirname, 'uploads', 'original'));
 
 // 配置multer
 const storage = multer.diskStorage({
@@ -63,10 +64,18 @@ app.use('/uploads', express.static(uploadsDir));
 // 获取所有照片
 app.get('/api/photos', async (req, res) => {
   try {
-    const files = await fs.readdir(photosDir);
+    const originalDir = path.join(__dirname, 'uploads', 'original');
+    
+    // 从original目录获取原图文件列表（用于元数据）
+    const originalFiles = fs.existsSync(originalDir) ? 
+      await fs.readdir(originalDir) : [];
+    const imageFiles = originalFiles.filter(file => 
+      /\.(jpg|jpeg|png|gif|bmp)$/i.test(file)
+    );
+    
     const photos = await Promise.all(
-      files.map(async (filename) => {
-        const filePath = path.join(photosDir, filename);
+      imageFiles.map(async (filename) => {
+        const filePath = path.join(originalDir, filename);
         const thumbnailPath = path.join(thumbnailsDir, filename);
         const stats = await fs.stat(filePath);
         
@@ -81,11 +90,31 @@ app.get('/api/photos', async (req, res) => {
           console.warn('无法获取图片尺寸:', error);
         }
 
+        // 检查WebP文件是否存在
+        const webpFilename = filename.replace(/\.[^/.]+$/, '.webp');
+        const webpPath = path.join(webpDir, webpFilename);
+        let webpUrl = null;
+        
+        if (fs.existsSync(webpPath)) {
+          webpUrl = `/uploads/webp/${webpFilename}`;
+        }
+
+        // 检查中等尺寸图片是否存在
+        const mediumFilename = 'medium_' + filename;
+        const mediumPath = path.join(photosDir, mediumFilename);
+        let mediumUrl = null;
+        
+        if (fs.existsSync(mediumPath)) {
+          mediumUrl = `/uploads/photos/${mediumFilename}`;
+        }
+
         return {
           id: filename.replace(/\.[^/.]+$/, ''),
           filename: filename,
           originalName: filename,
-          path: `/uploads/photos/${filename}`,
+          path: mediumUrl || `/uploads/photos/${filename}`, // 优先返回中等尺寸
+          mediumPath: mediumUrl,
+          webpPath: webpUrl,
           thumbnailPath: `/uploads/thumbnails/${filename}`,
           uploadedAt: stats.birthtime.toISOString(),
           width: width,
@@ -207,11 +236,28 @@ app.post('/api/upload-batch', async (req, res) => {
           // 复制文件到上传目录
           await fs.copyFile(filePath, destPath);
           
-          // 生成缩略图
+          // 生成多种尺寸和格式的图片
           const thumbnailPath = path.join(thumbnailsDir, filename);
+          const mediumPath = path.join(photosDir, 'medium_' + filename);
+          const webpPath = path.join(webpDir, filename.replace(/\.[^/.]+$/, '.webp'));
+          
+          // 生成缩略图
           await sharp(destPath)
-            .resize(200, 200, { fit: 'cover' })
+            .resize(300, 300, { fit: 'cover' })
+            .jpeg({ quality: 80 })
             .toFile(thumbnailPath);
+          
+          // 生成中等尺寸图片
+          await sharp(destPath)
+            .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
+            .jpeg({ quality: 85 })
+            .toFile(mediumPath);
+          
+          // 生成WebP格式图片
+          await sharp(destPath)
+            .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 80 })
+            .toFile(webpPath);
 
           // 获取图片信息
           const metadata = await sharp(destPath).metadata();
@@ -220,6 +266,8 @@ app.post('/api/upload-batch', async (req, res) => {
             id: filename,
             originalName: file,
             path: `/uploads/photos/${filename}`,
+            mediumPath: `/uploads/photos/medium_${filename}`,
+            webpPath: `/uploads/webp/${filename.replace(/\.[^/.]+$/, '.webp')}`,
             thumbnailPath: `/uploads/thumbnails/${filename}`,
             size: fileStats.size,
             width: metadata.width,

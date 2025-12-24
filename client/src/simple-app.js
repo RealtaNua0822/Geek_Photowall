@@ -22,6 +22,7 @@ function App() {
       const data = await response.json();
       setPhotos(data || []);
       console.log('Photos loaded:', data);
+      console.log('WebP paths:', data.map(p => ({ id: p.id, webpPath: p.webpPath, mediumPath: p.mediumPath })));
     } catch (error) {
       console.error('获取照片失败:', error);
       setError('获取照片失败: ' + error.message);
@@ -128,27 +129,57 @@ function App() {
                   <p>开始上传一些精彩的作品吧！</p>
                 </div>
               ) : (
-                <div className="photo-grid">
-                  {photos.map(photo => (
-                    <div key={photo.id} className="photo-item">
-                      <img 
-                        src={photo.path} 
-                        alt={photo.originalName}
-                        style={{ 
-                          width: '100%', 
-                          height: 'auto',
-                          borderRadius: '8px',
-                          border: '1px solid #00ff41',
-                          boxShadow: '0 0 10px rgba(0, 255, 65, 0.3)',
-                          transition: 'all 0.3s ease'
-                        }}
-                      />
-                      <div className="photo-info">
-                        <p>{photo.originalName}</p>
-                        <p>{photo.width} × {photo.height} • {(photo.size / 1024).toFixed(1)}KB</p>
+                <div className="photo-wall">
+                  {photos.map((photo, index) => {
+                    // 生成不规则尺寸类
+                    const sizeClass = `photo-size-${(index % 6) + 1}`;
+                    return (
+                      <div key={photo.id} className={`photo-item ${sizeClass}`}>
+                        <div className="photo-container">
+                          {photo.webpPath ? (
+                            <img 
+                              src={photo.webpPath} 
+                              alt={photo.originalName}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <img 
+                              src={photo.mediumPath || photo.path} 
+                              alt={photo.originalName}
+                              loading="lazy"
+                            />
+                          )}
+                          <div className="photo-overlay">
+                            <div className="photo-actions">
+                              <button 
+                                className="delete-btn"
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm('确定要删除这张照片吗？')) {
+                                    try {
+                                      await fetch(`/api/photos/${photo.id}`, {
+                                        method: 'DELETE'
+                                      });
+                                      fetchPhotos();
+                                    } catch (error) {
+                                      console.error('删除失败:', error);
+                                      alert('删除失败');
+                                    }
+                                  }
+                                }}
+                                title="删除照片"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                            {photo.webpPath && (
+                              <div className="webp-badge">WebP</div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

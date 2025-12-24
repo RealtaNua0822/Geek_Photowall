@@ -54,7 +54,6 @@ const TechParams = ({ photos }) => {
     };
 
     const mockMetadata = {
-      fileName: photo.originalName,
       fileSize: `${(photo.size / 1024).toFixed(1)} KB`,
       dimensions: `${photo.width} × ${photo.height}`,
       aspectRatio: (photo.width / photo.height).toFixed(2),
@@ -91,9 +90,8 @@ const TechParams = ({ photos }) => {
               className={`photo-thumb ${selectedPhoto?.id === photo.id ? 'selected' : ''}`}
               onClick={() => setSelectedPhoto(photo)}
             >
-              <img src={photo.path} alt={photo.originalName} />
+              <img src={photo.path} alt="" />
               <div className="thumb-info">
-                <p>{photo.originalName}</p>
                 <p>{photo.width} × {photo.height}</p>
               </div>
             </div>

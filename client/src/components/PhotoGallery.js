@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import Masonry from 'react-masonry-css';
+import React, { useState, useEffect } from 'react';
 import TechParams from './TechParams';
 import './PhotoGallery.css';
 
 const PhotoGallery = ({ photos, onRefresh, loading }) => {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
-  const [viewMode, setViewMode] = useState('masonry'); // masonry, grid, list
+  const [viewMode, setViewMode] = useState('wall'); // wall, grid, list
+  const [shuffledPhotos, setShuffledPhotos] = useState([]);
+
+  // 随机打乱照片数组
+  useEffect(() => {
+    if (photos && photos.length > 0) {
+      const shuffled = [...photos].sort(() => Math.random() - 0.5);
+      setShuffledPhotos(shuffled);
+    }
+  }, [photos]);
   const [showTechParams, setShowTechParams] = useState(false);
 
   // 删除照片
@@ -28,63 +36,157 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     }
   };
 
-  // 瀑布流断点
-  const breakpointColumnsObj = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 1
+  // 随机图片墙布局
+  const renderPhotoWall = () => {
+    if (shuffledPhotos.length === 0) return null;
+    
+    return (
+      <div className="photo-wall">
+        {shuffledPhotos.map((photo, index) => {
+          // 随机生成不同大小的照片块
+          const sizeClass = getRandomSizeClass(index);
+          return (
+            <div 
+              key={photo.id} 
+              className={`wall-photo-item ${sizeClass}`}
+              onClick={() => setSelectedPhoto(photo)}
+            >
+              <div className="wall-photo-container">
+                {photo.webpPath ? (
+                  <picture>
+                    <source srcSet={photo.webpPath} type="image/webp" />
+                    <source srcSet={photo.mediumPath || photo.path} type="image/jpeg" />
+                    <img 
+                      src={photo.mediumPath || photo.path} 
+                      alt=""
+                      loading="lazy"
+                    />
+                  </picture>
+                ) : (
+                  <img 
+                    src={photo.mediumPath || photo.path} 
+                    alt=""
+                    loading="lazy"
+                  />
+                )}
+                <div className="wall-photo-overlay">
+                  <div className="wall-photo-details">
+                    {photo.width} × {photo.height}
+                    {photo.webpPath && <span className="webp-badge">WebP</span>}
+                  </div>
+                  <div className="wall-photo-actions">
+                    <button 
+                      className="wall-tech-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedPhoto(photo);
+                        setShowTechParams(true);
+                      }}
+                      title="技术参数分析"
+                    >
+                      🔬
+                    </button>
+                    <button 
+                      className="wall-delete-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePhoto(photo.id);
+                      }}
+                      title="删除照片"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // 随机生成大小类名
+  const getRandomSizeClass = (index) => {
+    const sizeClasses = [
+      'size-large', 'size-medium', 'size-small', 
+      'size-wide', 'size-tall', 'size-medium',
+      'size-small', 'size-large', 'size-medium'
+    ];
+    return sizeClasses[index % sizeClasses.length];
   };
 
   // 渲染单个照片项
-  const renderPhotoItem = (photo) => (
-    <div key={photo.id} className="photo-item">
-      <div className="photo-container">
-        <img 
-          src={photo.path} 
-          alt={photo.originalName}
-          onClick={() => setSelectedPhoto(photo)}
-          loading="lazy"
-        />
-        <div className="photo-overlay">
-          <div className="photo-info">
-            <p className="photo-name">{photo.originalName}</p>
-            <p className="photo-details">
-              {photo.width} × {photo.height} • {(photo.size / 1024).toFixed(1)}KB
-            </p>
-          </div>
-          <div className="photo-actions">
-            <button 
-              className="tech-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedPhoto(photo);
-                setShowTechParams(true);
-              }}
-              title="技术参数分析"
-            >
-              🔬
-            </button>
-            <button 
-              className="delete-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeletePhoto(photo.id);
-              }}
-              title="删除照片"
-            >
-              🗑️
-            </button>
+  const renderPhotoItem = (photo, index) => {
+    // 优先使用WebP格式，回退到中等尺寸，最后原图
+    const renderImage = () => {
+      if (photo.webpPath) {
+        return (
+          <picture>
+            <source srcSet={photo.webpPath} type="image/webp" />
+            <source srcSet={photo.mediumPath || photo.path} type="image/jpeg" />
+            <img 
+              src={photo.mediumPath || photo.path} 
+              alt=""
+              loading="lazy"
+            />
+          </picture>
+        );
+      } else {
+        return (
+          <img 
+            src={photo.mediumPath || photo.path} 
+            alt=""
+            loading="lazy"
+          />
+        );
+      }
+    };
+
+    return (
+      <div key={photo.id} className="photo-item">
+        <div className="photo-container">
+          {renderImage()}
+          <div className="photo-overlay">
+            <div className="photo-info">
+              <p className="photo-details">
+                {photo.width} × {photo.height} • {(photo.size / 1024).toFixed(1)}KB
+                {photo.webpPath && <span className="webp-badge">WebP</span>}
+              </p>
+            </div>
+            <div className="photo-actions">
+              <button 
+                className="tech-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPhoto(photo);
+                  setShowTechParams(true);
+                }}
+                title="技术参数分析"
+              >
+                🔬
+              </button>
+              <button 
+                className="delete-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeletePhoto(photo.id);
+                }}
+                title="删除照片"
+              >
+                🗑️
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // 网格视图
   const renderGridView = () => (
     <div className="grid-view">
-      {photos.map(photo => renderPhotoItem(photo))}
+      {photos.map((photo, index) => renderPhotoItem(photo, index))}
     </div>
   );
 
@@ -95,13 +197,13 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
         <div key={photo.id} className="list-item">
           <img 
             src={photo.thumbnailPath} 
-            alt={photo.originalName}
+            alt=""
             onClick={() => setSelectedPhoto(photo)}
           />
           <div className="list-item-info">
-            <h3>{photo.originalName}</h3>
             <p>{photo.width} × {photo.height} • {(photo.size / 1024).toFixed(1)}KB</p>
             <p>上传时间: {new Date(photo.uploadedAt).toLocaleString()}</p>
+            {photo.webpPath && <p className="webp-info">✅ WebP优化版本可用</p>}
           </div>
           <div className="list-item-actions">
             <button 
@@ -151,11 +253,11 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
         <h2>作品展示 ({photos.length} 张照片)</h2>
         <div className="view-controls">
           <button 
-            className={`view-btn ${viewMode === 'masonry' ? 'active' : ''}`}
-            onClick={() => setViewMode('masonry')}
-            title="瀑布流视图"
+            className={`view-btn ${viewMode === 'wall' ? 'active' : ''}`}
+            onClick={() => setViewMode('wall')}
+            title="随机图片墙"
           >
-            ⊞
+            🎲
           </button>
           <button 
             className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
@@ -171,25 +273,22 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
           >
             ☰
           </button>
-          <button className="refresh-btn" onClick={onRefresh} title="刷新">
+          <button className="refresh-btn" onClick={() => {
+            onRefresh();
+            // 重新随机排列
+            if (photos && photos.length > 0) {
+              const shuffled = [...photos].sort(() => Math.random() - 0.5);
+              setShuffledPhotos(shuffled);
+            }
+          }} title="刷新并重新排列">
             🔄
           </button>
         </div>
       </div>
 
       <div className="gallery-content">
-        {viewMode === 'masonry' && (
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
-          >
-            {photos.map(photo => renderPhotoItem(photo))}
-          </Masonry>
-        )}
-        
+        {viewMode === 'wall' && renderPhotoWall()}
         {viewMode === 'grid' && renderGridView()}
-        
         {viewMode === 'list' && renderListView()}
       </div>
 
@@ -200,11 +299,19 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
             <button className="close-btn" onClick={() => setSelectedPhoto(null)}>
               ×
             </button>
-            <img src={selectedPhoto.path} alt={selectedPhoto.originalName} />
+            {selectedPhoto.webpPath ? (
+              <picture>
+                <source srcSet={selectedPhoto.webpPath} type="image/webp" />
+                <source srcSet={selectedPhoto.mediumPath || selectedPhoto.path} type="image/jpeg" />
+                <img src={selectedPhoto.mediumPath || selectedPhoto.path} alt="" />
+              </picture>
+            ) : (
+              <img src={selectedPhoto.mediumPath || selectedPhoto.path} alt="" />
+            )}
             <div className="modal-info">
-              <h3>{selectedPhoto.originalName}</h3>
               <p>尺寸: {selectedPhoto.width} × {selectedPhoto.height}</p>
               <p>文件大小: {(selectedPhoto.size / 1024).toFixed(1)}KB</p>
+              {selectedPhoto.webpPath && <p className="webp-info">✅ WebP优化版本可用</p>}
               <p>上传时间: {new Date(selectedPhoto.uploadedAt).toLocaleString()}</p>
               <button 
                 className="tech-analysis-btn"
