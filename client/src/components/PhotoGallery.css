@@ -89,15 +89,13 @@
   box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
 }
 
-/* 随机图片墙布局 - 瀑布流式 */
+/* 图片墙布局 - 静态网格 */
 .photo-wall {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
   padding: 10px;
   width: 100%;
-  align-items: flex-start;
-  justify-content: center;
 }
 
 .wall-photo-item {
@@ -105,63 +103,11 @@
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
   border: 2px solid rgba(0, 255, 65, 0.3);
   box-shadow: 
     0 0 20px rgba(0, 255, 65, 0.2),
     0 4px 12px rgba(0, 0, 0, 0.3);
-  transform: rotate(0deg);
-  flex-shrink: 0;
   max-width: 100%;
-}
-
-/* 基于长宽比的灵活尺寸 */
-.wall-photo-item.size-large {
-  width: 280px;
-}
-
-.wall-photo-item.size-medium {
-  width: 180px;
-}
-
-.wall-photo-item.size-small {
-  width: 120px;
-}
-
-.wall-photo-item.size-wide {
-  width: 360px;
-}
-
-.wall-photo-item.size-wide-large {
-  width: 450px;
-}
-
-.wall-photo-item.size-tall {
-  width: 140px;
-}
-
-.wall-photo-item.size-tall-large {
-  width: 160px;
-}
-
-.wall-photo-item.size-panorama {
-  width: 500px;
-}
-
-.wall-photo-item.size-portrait {
-  width: 130px;
-}
-
-.wall-photo-item.size-square {
-  width: 200px;
-}
-
-.wall-photo-item.size-medium-square {
-  width: 150px;
-}
-
-.wall-photo-item.size-thumbnail {
-  width: 100px;
 }
 
 /* 添加微妙的随机旋转效果 */
@@ -203,7 +149,6 @@
   width: 100%;
   height: auto;
   object-fit: contain;
-  transition: all 0.3s ease;
   filter: brightness(0.9) contrast(1.1);
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;

@@ -18,15 +18,27 @@ html, body, #root {
   transform: none !important;
 }
 
-/* 允许特定的hover效果 */
-.wall-photo-item:hover,
-.tab-btn:hover,
-.photo-container:hover,
-.delete-btn:hover,
-.tech-btn:hover,
-.wall-tech-btn:hover,
-.wall-delete-btn:hover {
-  transition: all 0.3s ease !important;
+/* 禁用所有hover效果 */
+*:hover {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* 禁用所有伪元素动画 */
+*::before,
+*::after {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* 禁用所有媒体查询动画 */
+@media * {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 body {

@@ -33,136 +33,67 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     
     return (
       <div className="photo-wall">
-        {photos.map((photo, index) => {
-          // 随机生成不同大小的照片块，考虑长宽比
-          const sizeClass = getRandomSizeClass(photo, index);
-          const aspectRatio = photo.width / photo.height;
-          
-          // 计算动态高度以保持长宽比
-          const getDynamicHeight = (sizeClass, baseSize = 120) => {
-            switch (sizeClass) {
-              case 'size-large':
-                return baseSize * 2;
-              case 'size-medium':
-                return baseSize * 2;
-              case 'size-wide':
-                return baseSize;
-              case 'size-wide-large':
-                return baseSize;
-              case 'size-tall':
-                return baseSize * 2;
-              case 'size-tall-large':
-                return baseSize * 3;
-              case 'size-panorama':
-                return baseSize;
-              case 'size-portrait':
-                return baseSize * 3;
-              default:
-                return baseSize;
-            }
-          };
-          
-          const containerHeight = getDynamicHeight(sizeClass);
-          const containerWidth = containerHeight * aspectRatio;
-          
-          return (
-            <div 
-              key={photo.id} 
-              className={`wall-photo-item ${sizeClass}`}
-              onClick={() => setSelectedPhoto(photo)}
-              style={{
-                '--aspect-ratio': aspectRatio,
-                '--dynamic-width': `${containerWidth}px`,
-                '--dynamic-height': `${containerHeight}px`
-              }}
-            >
-              <div className="wall-photo-container">
-                {photo.webpPath ? (
-                  <picture>
-                    <source srcSet={photo.webpPath} type="image/webp" />
-                    <source srcSet={photo.mediumPath || photo.path} type="image/jpeg" />
-                    <img 
-                      src={photo.mediumPath || photo.path} 
-                      alt=""
-                      loading="lazy"
-                      style={{
-                        aspectRatio: aspectRatio,
-                        width: '100%',
-                        height: 'auto'
-                      }}
-                    />
-                  </picture>
-                ) : (
+        {photos.map((photo) => (
+          <div 
+            key={photo.id} 
+            className="wall-photo-item"
+            onClick={() => setSelectedPhoto(photo)}
+          >
+            <div className="wall-photo-container">
+              {photo.webpPath ? (
+                <picture>
+                  <source srcSet={photo.webpPath} type="image/webp" />
+                  <source srcSet={photo.mediumPath || photo.path} type="image/jpeg" />
                   <img 
                     src={photo.mediumPath || photo.path} 
                     alt=""
                     loading="lazy"
-                    style={{
-                      aspectRatio: aspectRatio,
-                      width: '100%',
-                      height: 'auto'
-                    }}
                   />
-                )}
-                <div className="wall-photo-overlay">
-                  <div className="wall-photo-details">
-                    {photo.width} × {photo.height}
-                    {photo.webpPath && <span className="webp-badge">WebP</span>}
-                  </div>
-                  <div className="wall-photo-actions">
-                    <button 
-                      className="wall-tech-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedPhoto(photo);
-                        setShowTechParams(true);
-                      }}
-                      title="技术参数分析"
-                    >
-                      🔬
-                    </button>
-                    <button 
-                      className="wall-delete-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeletePhoto(photo.id);
-                      }}
-                      title="删除照片"
-                    >
-                      🗑️
-                    </button>
-                  </div>
+                </picture>
+              ) : (
+                <img 
+                  src={photo.mediumPath || photo.path} 
+                  alt=""
+                  loading="lazy"
+                />
+              )}
+              <div className="wall-photo-overlay">
+                <div className="wall-photo-details">
+                  {photo.width} × {photo.height}
+                  {photo.webpPath && <span className="webp-badge">WebP</span>}
+                </div>
+                <div className="wall-photo-actions">
+                  <button 
+                    className="wall-tech-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPhoto(photo);
+                      setShowTechParams(true);
+                    }}
+                    title="技术参数分析"
+                  >
+                    🔬
+                  </button>
+                  <button 
+                    className="wall-delete-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeletePhoto(photo.id);
+                    }}
+                    title="删除照片"
+                  >
+                    🗑️
+                  </button>
                 </div>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     );
   };
 
-  // 确定性生成大小类名，基于图片长宽比和索引
-  const getRandomSizeClass = (photo, index) => {
-    const aspectRatio = photo.width / photo.height;
-    
-    // 根据长宽比选择合适的尺寸类别
-    let suitableSizes = [];
-    
-    if (aspectRatio > 1.5) {
-      // 宽图
-      suitableSizes = ['size-wide', 'size-wide-large', 'size-medium-wide', 'size-small'];
-    } else if (aspectRatio < 0.7) {
-      // 高图
-      suitableSizes = ['size-tall', 'size-tall-large', 'size-medium-tall', 'size-small'];
-    } else {
-      // 方图或接近方图
-      suitableSizes = ['size-large', 'size-medium', 'size-small', 'size-square', 'size-medium-square'];
-    }
-    
-    // 使用索引进行确定性选择，而不是随机
-    const selectedIndex = index % suitableSizes.length;
-    return suitableSizes[selectedIndex];
-  };
+  
 
   // 渲染单个照片项
   const renderPhotoItem = (photo, index) => {
