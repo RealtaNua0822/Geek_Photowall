@@ -5,15 +5,6 @@ import './PhotoGallery.css';
 const PhotoGallery = ({ photos, onRefresh, loading }) => {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [viewMode, setViewMode] = useState('wall'); // wall, grid, list
-  const [shuffledPhotos, setShuffledPhotos] = useState([]);
-
-  // 随机打乱照片数组
-  useEffect(() => {
-    if (photos && photos.length > 0) {
-      const shuffled = [...photos].sort(() => Math.random() - 0.5);
-      setShuffledPhotos(shuffled);
-    }
-  }, [photos]);
   const [showTechParams, setShowTechParams] = useState(false);
 
   // 删除照片
@@ -36,13 +27,13 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     }
   };
 
-  // 随机图片墙布局
+  // 图片墙布局
   const renderPhotoWall = () => {
-    if (shuffledPhotos.length === 0) return null;
+    if (photos.length === 0) return null;
     
     return (
       <div className="photo-wall">
-        {shuffledPhotos.map((photo, index) => {
+        {photos.map((photo, index) => {
           // 随机生成不同大小的照片块，考虑长宽比
           const sizeClass = getRandomSizeClass(photo, index);
           const aspectRatio = photo.width / photo.height;
@@ -150,7 +141,7 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
     );
   };
 
-  // 随机生成大小类名，考虑图片长宽比
+  // 确定性生成大小类名，基于图片长宽比和索引
   const getRandomSizeClass = (photo, index) => {
     const aspectRatio = photo.width / photo.height;
     
@@ -168,20 +159,9 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
       suitableSizes = ['size-large', 'size-medium', 'size-small', 'size-square', 'size-medium-square'];
     }
     
-    // 添加一些随机性，偶尔不按长宽比
-    if (Math.random() < 0.2) {
-      const allSizes = [
-        'size-large', 'size-medium', 'size-small', 
-        'size-wide', 'size-wide-large', 'size-medium-wide',
-        'size-tall', 'size-tall-large', 'size-medium-tall',
-        'size-square', 'size-medium-square', 'size-panorama',
-        'size-portrait', 'size-thumbnail'
-      ];
-      suitableSizes = allSizes;
-    }
-    
-    // 随机选择一个合适的尺寸
-    return suitableSizes[Math.floor(Math.random() * suitableSizes.length)];
+    // 使用索引进行确定性选择，而不是随机
+    const selectedIndex = index % suitableSizes.length;
+    return suitableSizes[selectedIndex];
   };
 
   // 渲染单个照片项
@@ -343,12 +323,7 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
           </button>
           <button className="refresh-btn" onClick={() => {
             onRefresh();
-            // 重新随机排列
-            if (photos && photos.length > 0) {
-              const shuffled = [...photos].sort(() => Math.random() - 0.5);
-              setShuffledPhotos(shuffled);
-            }
-          }} title="刷新并重新排列">
+          }} title="刷新照片列表">
             🔄
           </button>
         </div>
