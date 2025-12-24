@@ -4,9 +4,49 @@ const cors = require('cors');
 const fs = require('fs-extra');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const sharp = require('sharp');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// 通用图片处理函数
+async function processImageVariants(inputPath, filename) {
+  try {
+    const thumbnailPath = path.join(thumbnailsDir, filename);
+    const webpPath = path.join(webpDir, filename.replace(/\.[^/.]+$/, '.webp'));
+    const mediumPath = path.join(photosDir, 'medium_' + filename);
+    
+    // 并行处理所有图片格式
+    await Promise.all([
+      // 生成缩略图
+      sharp(inputPath)
+        .resize(300, 300, { fit: 'cover' })
+        .jpeg({ quality: 80 })
+        .toFile(thumbnailPath),
+      
+      // 生成中等尺寸图片
+      sharp(inputPath)
+        .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 85 })
+        .toFile(mediumPath),
+      
+      // 生成WebP格式图片
+      sharp(inputPath)
+        .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(webpPath)
+    ]);
+    
+    return {
+      thumbnailPath: `/uploads/thumbnails/${filename}`,
+      mediumPath: `/uploads/photos/medium_${filename}`,
+      webpPath: `/uploads/webp/${filename.replace(/\.[^/.]+$/, '.webp')}`
+    };
+  } catch (error) {
+    console.error('图片处理失败:', error);
+    throw error;
+  }
+}
 
 // 中间件
 app.use(cors());
@@ -142,44 +182,24 @@ app.post('/api/upload', upload.array('photos'), async (req, res) => {
     const uploadedPhotos = [];
     
     for (const file of req.files) {
-      // 生成多种尺寸和格式的图片
-              try {
-                const sharp = require('sharp');
-                const thumbnailPath = path.join(thumbnailsDir, file.filename);
-                const webpPath = path.join(webpDir, file.filename.replace(/\.[^/.]+$/, '.webp'));
-                const mediumPath = path.join(photosDir, 'medium_' + file.filename);
-                
-                // 生成缩略图
-                await sharp(file.path)
-                  .resize(300, 300, { fit: 'cover' })
-                  .jpeg({ quality: 80 })
-                  .toFile(thumbnailPath);
-                
-                // 生成中等尺寸图片
-                await sharp(file.path)
-                  .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
-                  .jpeg({ quality: 85 })
-                  .toFile(mediumPath);
-                
-                // 生成WebP格式图片
-                await sharp(file.path)
-                  .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
-                  .webp({ quality: 80 })
-                  .toFile(webpPath);
-                
-                uploadedPhotos.push({
-                  id: file.filename.replace(/\.[^/.]+$/, ''),
-                  filename: file.filename,
-                  originalName: file.originalname,
-                  path: `/uploads/photos/${file.filename}`,
-                  mediumPath: `/uploads/photos/medium_${file.filename}`,
-                  webpPath: `/uploads/webp/${file.filename.replace(/\.[^/.]+$/, '.webp')}`,
-                  thumbnailPath: `/uploads/thumbnails/${file.filename}`,
-                  size: file.size
-                });
-              } catch (error) {
-                console.error('生成图片格式失败:', error);
-              }    }
+      try {
+        // 使用通用图片处理函数
+        const processedPaths = await processImageVariants(file.path, file.filename);
+        
+        uploadedPhotos.push({
+          id: file.filename.replace(/\.[^/.]+$/, ''),
+          filename: file.filename,
+          originalName: file.originalname,
+          path: `/uploads/photos/${file.filename}`,
+          mediumPath: processedPaths.mediumPath,
+          webpPath: processedPaths.webpPath,
+          thumbnailPath: processedPaths.thumbnailPath,
+          size: file.size
+        });
+      } catch (error) {
+        console.error('生成图片格式失败:', error);
+      }
+    }
     
     res.json({ success: true, photos: uploadedPhotos });
   } catch (error) {
@@ -236,28 +256,8 @@ app.post('/api/upload-batch', async (req, res) => {
           // 复制文件到上传目录
           await fs.copyFile(filePath, destPath);
           
-          // 生成多种尺寸和格式的图片
-          const thumbnailPath = path.join(thumbnailsDir, filename);
-          const mediumPath = path.join(photosDir, 'medium_' + filename);
-          const webpPath = path.join(webpDir, filename.replace(/\.[^/.]+$/, '.webp'));
-          
-          // 生成缩略图
-          await sharp(destPath)
-            .resize(300, 300, { fit: 'cover' })
-            .jpeg({ quality: 80 })
-            .toFile(thumbnailPath);
-          
-          // 生成中等尺寸图片
-          await sharp(destPath)
-            .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
-            .jpeg({ quality: 85 })
-            .toFile(mediumPath);
-          
-          // 生成WebP格式图片
-          await sharp(destPath)
-            .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
-            .webp({ quality: 80 })
-            .toFile(webpPath);
+          // 使用通用图片处理函数
+          const processedPaths = await processImageVariants(destPath, filename);
 
           // 获取图片信息
           const metadata = await sharp(destPath).metadata();
@@ -266,9 +266,9 @@ app.post('/api/upload-batch', async (req, res) => {
             id: filename,
             originalName: file,
             path: `/uploads/photos/${filename}`,
-            mediumPath: `/uploads/photos/medium_${filename}`,
-            webpPath: `/uploads/webp/${filename.replace(/\.[^/.]+$/, '.webp')}`,
-            thumbnailPath: `/uploads/thumbnails/${filename}`,
+            mediumPath: processedPaths.mediumPath,
+            webpPath: processedPaths.webpPath,
+            thumbnailPath: processedPaths.thumbnailPath,
             size: fileStats.size,
             width: metadata.width,
             height: metadata.height,
