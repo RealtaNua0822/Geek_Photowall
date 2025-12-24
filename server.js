@@ -16,11 +16,13 @@ app.use(express.json());
 const uploadsDir = path.join(__dirname, 'uploads');
 const photosDir = path.join(uploadsDir, 'photos');
 const thumbnailsDir = path.join(uploadsDir, 'thumbnails');
+const webpDir = path.join(uploadsDir, 'webp');
 
 // 创建目录
 fs.ensureDirSync(uploadsDir);
 fs.ensureDirSync(photosDir);
 fs.ensureDirSync(thumbnailsDir);
+fs.ensureDirSync(webpDir);
 
 // 配置multer
 const storage = multer.diskStorage({
@@ -111,28 +113,44 @@ app.post('/api/upload', upload.array('photos'), async (req, res) => {
     const uploadedPhotos = [];
     
     for (const file of req.files) {
-      // 生成缩略图
-      try {
-        const sharp = require('sharp');
-        const thumbnailPath = path.join(thumbnailsDir, file.filename);
-        
-        await sharp(file.path)
-          .resize(300, 300, { fit: 'cover' })
-          .jpeg({ quality: 80 })
-          .toFile(thumbnailPath);
-        
-        uploadedPhotos.push({
-          id: file.filename.replace(/\.[^/.]+$/, ''),
-          filename: file.filename,
-          originalName: file.originalname,
-          path: `/uploads/photos/${file.filename}`,
-          thumbnailPath: `/uploads/thumbnails/${file.filename}`,
-          size: file.size
-        });
-      } catch (error) {
-        console.error('生成缩略图失败:', error);
-      }
-    }
+      // 生成多种尺寸和格式的图片
+              try {
+                const sharp = require('sharp');
+                const thumbnailPath = path.join(thumbnailsDir, file.filename);
+                const webpPath = path.join(webpDir, file.filename.replace(/\.[^/.]+$/, '.webp'));
+                const mediumPath = path.join(photosDir, 'medium_' + file.filename);
+                
+                // 生成缩略图
+                await sharp(file.path)
+                  .resize(300, 300, { fit: 'cover' })
+                  .jpeg({ quality: 80 })
+                  .toFile(thumbnailPath);
+                
+                // 生成中等尺寸图片
+                await sharp(file.path)
+                  .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
+                  .jpeg({ quality: 85 })
+                  .toFile(mediumPath);
+                
+                // 生成WebP格式图片
+                await sharp(file.path)
+                  .resize(1200, 900, { fit: 'inside', withoutEnlargement: true })
+                  .webp({ quality: 80 })
+                  .toFile(webpPath);
+                
+                uploadedPhotos.push({
+                  id: file.filename.replace(/\.[^/.]+$/, ''),
+                  filename: file.filename,
+                  originalName: file.originalname,
+                  path: `/uploads/photos/${file.filename}`,
+                  mediumPath: `/uploads/photos/medium_${file.filename}`,
+                  webpPath: `/uploads/webp/${file.filename.replace(/\.[^/.]+$/, '.webp')}`,
+                  thumbnailPath: `/uploads/thumbnails/${file.filename}`,
+                  size: file.size
+                });
+              } catch (error) {
+                console.error('生成图片格式失败:', error);
+              }    }
     
     res.json({ success: true, photos: uploadedPhotos });
   } catch (error) {
