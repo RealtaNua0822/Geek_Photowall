@@ -11,6 +11,24 @@ html, body, #root {
   scale: 1 !important;
 }
 
+/* 全局禁用所有动画和过渡效果 */
+* {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* 允许特定的hover效果 */
+.wall-photo-item:hover,
+.tab-btn:hover,
+.photo-container:hover,
+.delete-btn:hover,
+.tech-btn:hover,
+.wall-tech-btn:hover,
+.wall-delete-btn:hover {
+  transition: all 0.3s ease !important;
+}
+
 body {
   font-family: 'Courier New', 'Fira Code', 'Consolas', monospace;
   -webkit-font-smoothing: antialiased;
@@ -83,7 +101,7 @@ body {
     0 0 10px #00ff41,
     0 0 20px #00ff41,
     0 0 30px #00ff41;
-  animation: glow-pulse 2s ease-in-out infinite alternate;
+  animation: none !important;
 }
 
 @keyframes glow-pulse {
@@ -183,7 +201,7 @@ body {
   border: 3px solid rgba(0, 255, 65, 0.2);
   border-top: 3px solid #ff0080;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: none !important;
   margin-bottom: 20px;
   box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
 }
@@ -193,7 +211,7 @@ body {
   font-family: 'Courier New', monospace;
   text-transform: uppercase;
   letter-spacing: 2px;
-  animation: blink 1s infinite;
+  animation: none !important;
 }
 
 @keyframes blink {

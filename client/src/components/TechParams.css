@@ -32,7 +32,7 @@
   height: 8px;
   background: #ff0080;
   border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: none !important;
   box-shadow: 0 0 10px #ff0080;
 }
 

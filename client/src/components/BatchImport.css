@@ -32,7 +32,7 @@
   height: 8px;
   background: #ff0080;
   border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: none !important;
   box-shadow: 0 0 10px #ff0080;
 }
 
@@ -127,7 +127,7 @@
   border: 2px solid #000;
   border-top: 2px solid transparent;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: none !important;
 }
 
 @keyframes spin {

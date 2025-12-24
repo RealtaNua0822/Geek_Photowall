@@ -17,6 +17,7 @@
   margin: 0;
   font-size: 24px;
   text-shadow: 0 0 10px #00ff41;
+  animation: none !important;
 }
 
 .status-indicator {
