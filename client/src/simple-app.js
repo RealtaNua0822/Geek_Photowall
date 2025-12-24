@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import UploadZone from './components/UploadZone';
+import BatchImport from './components/BatchImport';
 import Dashboard from './components/Dashboard';
 import TechParams from './components/TechParams';
 
@@ -34,10 +35,7 @@ function App() {
     fetchPhotos();
   }, []);
 
-  // 刷新照片列表
-  const refreshPhotos = () => {
-    fetchPhotos();
-  };
+  
 
   // 上传成功回调
   const handleUploadSuccess = () => {
@@ -121,7 +119,6 @@ function App() {
           <div className="photo-gallery">
             <div className="gallery-header">
               <h2>作品展示 ({photos.length} 张照片)</h2>
-              <button className="refresh-btn" onClick={refreshPhotos}>🔄 刷新</button>
             </div>
             <div className="gallery-content">
               {photos.length === 0 ? (
@@ -163,21 +160,7 @@ function App() {
         )}
 
         {!loading && !error && activeTab === 'import' && (
-          <div className="batch-import">
-            <h2>批量导入</h2>
-            <p>从服务器目录批量导入照片</p>
-            <div className="import-form" style={{
-              background: 'rgba(0, 255, 65, 0.05)',
-              border: '1px solid #00ff41',
-              borderRadius: '8px',
-              padding: '20px',
-              margin: '20px 0'
-            }}>
-              <p style={{ color: '#00ff41', textAlign: 'center' }}>
-                批量导入功能正在开发中...
-              </p>
-            </div>
-          </div>
+          <BatchImport onImportSuccess={handleUploadSuccess} />
         )}
 
         {!loading && !error && activeTab === 'dashboard' && (

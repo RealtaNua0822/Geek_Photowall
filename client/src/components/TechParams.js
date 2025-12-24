@@ -26,7 +26,7 @@ const TechParams = ({ photos }) => {
       'ISO': '400',
       '焦距': '50mm',
       '白平衡': '自动',
-      '拍摄时间': new Date(photo.uploadTime).toLocaleString(),
+      '拍摄时间': photo.uploadTime ? new Date(photo.uploadTime).toLocaleString() : '未知时间',
       '文件格式': photo.originalName.split('.').pop().toUpperCase(),
       '色彩空间': 'sRGB',
       '压缩质量': '95%'
@@ -61,7 +61,7 @@ const TechParams = ({ photos }) => {
       pixelCount: (photo.width * photo.height).toLocaleString(),
       colorDepth: '24-bit',
       compression: 'JPEG',
-      uploadTime: new Date(photo.uploadTime).toLocaleString()
+      uploadTime: photo.uploadTime ? new Date(photo.uploadTime).toLocaleString() : '未知时间'
     };
 
     setTechData({

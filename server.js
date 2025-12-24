@@ -141,42 +141,100 @@ app.post('/api/upload', upload.array('photos'), async (req, res) => {
   }
 });
 
-// 批量导入
-app.post('/api/upload-batch', upload.array('photos'), async (req, res) => {
+app.post('/api/upload-batch', async (req, res) => {
   try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: '没有上传文件' });
+    const { path: importPath } = req.body;
+    
+    if (!importPath) {
+      return res.status(400).json({ error: 'Import path is required' });
     }
 
-    const uploadedPhotos = [];
+    const fs = require('fs').promises;
+    const path = require('path');
     
-    for (const file of req.files) {
-      try {
-        const sharp = require('sharp');
-        const thumbnailPath = path.join(thumbnailsDir, file.filename);
-        
-        await sharp(file.path)
-          .resize(300, 300, { fit: 'cover' })
-          .jpeg({ quality: 80 })
-          .toFile(thumbnailPath);
-        
-        uploadedPhotos.push({
-          id: file.filename.replace(/\.[^/.]+$/, ''),
-          filename: file.filename,
-          originalName: file.originalname,
-          path: `/uploads/photos/${file.filename}`,
-          thumbnailPath: `/uploads/thumbnails/${file.filename}`,
-          size: file.size
-        });
-      } catch (error) {
-        console.error('处理文件失败:', file.filename, error);
+    let imported = 0;
+    let skipped = 0;
+    const errors = [];
+    const importedFiles = [];
+
+    try {
+      // 检查路径是否存在
+      const stats = await fs.stat(importPath);
+      if (!stats.isDirectory()) {
+        return res.status(400).json({ error: 'Path is not a directory' });
       }
+
+      // 读取目录内容
+      const files = await fs.readdir(importPath);
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+      
+      for (const file of files) {
+        try {
+          const ext = path.extname(file).toLowerCase();
+          if (!imageExtensions.includes(ext)) {
+            continue; // 跳过非图片文件
+          }
+
+          const filePath = path.join(importPath, file);
+          const fileStats = await fs.stat(filePath);
+          
+          if (!fileStats.isFile()) {
+            continue; // 跳过子目录
+          }
+
+          // 生成唯一文件名
+          const filename = Date.now() + '-' + Math.round(Math.random() * 1E9) + ext;
+          const destPath = path.join(photosDir, filename);
+          
+          // 复制文件到上传目录
+          await fs.copyFile(filePath, destPath);
+          
+          // 生成缩略图
+          const thumbnailPath = path.join(thumbnailsDir, filename);
+          await sharp(destPath)
+            .resize(200, 200, { fit: 'cover' })
+            .toFile(thumbnailPath);
+
+          // 获取图片信息
+          const metadata = await sharp(destPath).metadata();
+
+          const photoInfo = {
+            id: filename,
+            originalName: file,
+            path: `/uploads/photos/${filename}`,
+            thumbnailPath: `/uploads/thumbnails/${filename}`,
+            size: fileStats.size,
+            width: metadata.width,
+            height: metadata.height,
+            uploadTime: new Date().toISOString()
+          };
+
+          photos.push(photoInfo);
+          importedFiles.push(photoInfo);
+          imported++;
+        } catch (error) {
+          console.error('Error processing file:', file, error);
+          errors.push({
+            file: file,
+            reason: error.message
+          });
+        }
+      }
+
+      res.json({
+        success: true,
+        imported,
+        skipped,
+        errors,
+        importedFiles,
+        total: imported + skipped + errors.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to read directory: ' + error.message });
     }
-    
-    res.json({ success: true, photos: uploadedPhotos });
   } catch (error) {
-    console.error('批量导入失败:', error);
-    res.status(500).json({ error: '批量导入失败' });
+    console.error('Batch import error:', error);
+    res.status(500).json({ error: 'Batch import failed' });
   }
 });
 

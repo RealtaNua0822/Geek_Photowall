@@ -1,24 +1,21 @@
 @echo off
-echo 启动摄影师网站服务器...
-echo.
-echo 服务器将运行在: http://localhost:5000
-echo 前端开发服务器运行在: http://localhost:3000
-echo.
-echo 按 Ctrl+C 停止服务器
-echo.
+echo ========================================
+echo    Photographer Website Start Script
+echo ========================================
 
-REM 启动后端服务器
-start "后端服务器" cmd /k "npm run dev"
+echo Starting backend server...
+start "Backend Server" cmd /k "npm run dev"
 
-REM 等待2秒让后端服务器启动
-timeout /t 2 /nobreak >nul
+echo Waiting for backend to start...
+ping 127.0.0.1 -n 4 > nul
 
-REM 启动前端开发服务器
-start "前端服务器" cmd /k "cd client && npm start"
+echo Starting frontend server...
+start "Frontend Server" cmd /k "cd client & npm start"
 
-echo.
-echo 两个服务器正在启动中...
-echo 后端: http://localhost:5000
-echo 前端: http://localhost:3000
+echo ========================================
+echo    Servers Started!
+echo ========================================
+echo Frontend: http://localhost:3000
+echo Backend:  http://localhost:5000
 echo.
 pause

@@ -43,7 +43,13 @@ const Dashboard = ({ photos }) => {
       avgSize,
       formats,
       sizes,
-      uploadTimes: photosData.slice(0, 10).map(p => new Date(p.uploadTime).toLocaleDateString())
+      uploadTimes: photosData.slice(0, 10).map(p => {
+  try {
+    return p.uploadTime ? new Date(p.uploadTime).toLocaleString() : '未知时间';
+  } catch (error) {
+    return '无效日期';
+  }
+})
     });
   };
 
