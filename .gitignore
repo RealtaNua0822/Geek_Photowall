@@ -98,5 +98,7 @@ Thumbs.db
 # Uploads
 uploads/photos/*
 uploads/thumbnails/*
+uploads/original/*
+uploads/webp/*
 !uploads/photos/.gitkeep
 !uploads/thumbnails/.gitkeep
