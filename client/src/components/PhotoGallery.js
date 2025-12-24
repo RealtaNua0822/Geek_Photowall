@@ -45,13 +45,44 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
         {shuffledPhotos.map((photo, index) => {
           // 随机生成不同大小的照片块，考虑长宽比
           const sizeClass = getRandomSizeClass(photo, index);
+          const aspectRatio = photo.width / photo.height;
+          
+          // 计算动态高度以保持长宽比
+          const getDynamicHeight = (sizeClass, baseSize = 120) => {
+            switch (sizeClass) {
+              case 'size-large':
+                return baseSize * 2;
+              case 'size-medium':
+                return baseSize * 2;
+              case 'size-wide':
+                return baseSize;
+              case 'size-wide-large':
+                return baseSize;
+              case 'size-tall':
+                return baseSize * 2;
+              case 'size-tall-large':
+                return baseSize * 3;
+              case 'size-panorama':
+                return baseSize;
+              case 'size-portrait':
+                return baseSize * 3;
+              default:
+                return baseSize;
+            }
+          };
+          
+          const containerHeight = getDynamicHeight(sizeClass);
+          const containerWidth = containerHeight * aspectRatio;
+          
           return (
             <div 
               key={photo.id} 
               className={`wall-photo-item ${sizeClass}`}
               onClick={() => setSelectedPhoto(photo)}
               style={{
-                '--aspect-ratio': photo.width / photo.height
+                '--aspect-ratio': aspectRatio,
+                '--dynamic-width': `${containerWidth}px`,
+                '--dynamic-height': `${containerHeight}px`
               }}
             >
               <div className="wall-photo-container">
@@ -63,6 +94,11 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
                       src={photo.mediumPath || photo.path} 
                       alt=""
                       loading="lazy"
+                      style={{
+                        aspectRatio: aspectRatio,
+                        width: '100%',
+                        height: 'auto'
+                      }}
                     />
                   </picture>
                 ) : (
@@ -70,6 +106,11 @@ const PhotoGallery = ({ photos, onRefresh, loading }) => {
                     src={photo.mediumPath || photo.path} 
                     alt=""
                     loading="lazy"
+                    style={{
+                      aspectRatio: aspectRatio,
+                      width: '100%',
+                      height: 'auto'
+                    }}
                   />
                 )}
                 <div className="wall-photo-overlay">
